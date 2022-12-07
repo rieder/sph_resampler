@@ -11,9 +11,13 @@ import sys
 import numpy as np
 from amuse.community.fi import Fi
 from amuse.datamodel import Particles
-from amuse.io import read_set_from_file, write_set_to_file
-from amuse.units import nbody_system, units
-from numpy.random import Generator, default_rng, random_sample
+from amuse.io import read_set_from_file
+from amuse.io import write_set_to_file
+from amuse.units import nbody_system
+from amuse.units import units
+from numpy.random import default_rng
+from numpy.random import Generator
+from numpy.random import random_sample
 from scipy.interpolate import RegularGridInterpolator
 
 DENSITY_UNIT = units.g * units.cm**-3
