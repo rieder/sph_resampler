@@ -53,6 +53,7 @@ def random_guess_near_orig(
         valid_z,
     )
 
+
 def random_pdf_3d(
     number_of_points,
     xmin,
@@ -118,7 +119,7 @@ def create_hydro_instance(
     instance.parameters.timestep = 1 | units.s
     if hasattr(particles, "itype"):
         particles = particles[particles.itype == 1]
-        del(particles.itype)
+        del (particles.itype)
     instance.gas_particles.add_particles(particles)
     return instance
 
@@ -221,7 +222,8 @@ def main():
     sph_original_instance.gas_particles.new_channel_to(
         particles_original
     ).copy_attributes(["h_smooth", "rho"])
-    write_set_to_file(sph_original_instance.gas_particles, 'gas-original.amuse', overwrite_file=True)
+    write_set_to_file(sph_original_instance.gas_particles,
+                      'gas-original.amuse', overwrite_file=True)
     print("Getting max density")
     # This should work but gives weird results! FIXME
     # rho_max = sph_original_instance.get_rhomax()
@@ -267,7 +269,8 @@ def main():
     sph_new_instance = create_hydro_instance(
         particles_new, **{'convert_nbody': None}
     )
-    write_set_to_file(sph_new_instance.gas_particles, "gas-guess.amuse", overwrite_file=True)
+    write_set_to_file(sph_new_instance.gas_particles,
+                      "gas-guess.amuse", overwrite_file=True)
 
     number_of_iterations = 10
     for i in range(number_of_iterations):
@@ -324,9 +327,12 @@ def main():
 
         PRESSURE_UNIT = units.MSun * units.pc**-2 * units.Myr**-1
         print(
-            pressure_difference_gradient_dx[0].in_(PRESSURE_UNIT * units.pc**-1),
-            pressure_difference_gradient_dy[0].in_(PRESSURE_UNIT * units.pc**-1),
-            pressure_difference_gradient_dz[0].in_(PRESSURE_UNIT * units.pc**-1),
+            pressure_difference_gradient_dx[0].in_(
+                PRESSURE_UNIT * units.pc**-1),
+            pressure_difference_gradient_dy[0].in_(
+                PRESSURE_UNIT * units.pc**-1),
+            pressure_difference_gradient_dz[0].in_(
+                PRESSURE_UNIT * units.pc**-1),
         )
         pdmax = max(
             max(
@@ -346,28 +352,33 @@ def main():
         pdmove_y = pressure_difference_gradient_dy / pdmax
         pdmove_z = pressure_difference_gradient_dz / pdmax
 
-        particles_new.x -= pdmove_x * (1 - i/number_of_iterations) * particles_new.h_smooth
+        particles_new.x -= pdmove_x * \
+            (1 - i/number_of_iterations) * particles_new.h_smooth
         # (
         #     pressure_difference_gradient_dx.value_in(
         #         PRESSURE_UNIT * units.pc**-1
         #     ) | 100*units.pc
         # )
-        particles_new.y -= pdmove_y * (1 - i/number_of_iterations) * particles_new.h_smooth
+        particles_new.y -= pdmove_y * \
+            (1 - i/number_of_iterations) * particles_new.h_smooth
         # (
         #     pressure_difference_gradient_dy.value_in(
         #         PRESSURE_UNIT * units.pc**-1
         #     ) | 100*units.pc
         # )
-        particles_new.z -= pdmove_z * (1 - i/number_of_iterations) * particles_new.h_smooth
+        particles_new.z -= pdmove_z * \
+            (1 - i/number_of_iterations) * particles_new.h_smooth
         # (
         #     pressure_difference_gradient_dz.value_in(
         #         PRESSURE_UNIT * units.pc**-1
         #     ) | 100*units.pc
         # )
-        particles_new.new_channel_to(sph_new_instance.gas_particles).copy_attributes(["x", "y", "z"])
+        particles_new.new_channel_to(
+            sph_new_instance.gas_particles).copy_attributes(["x", "y", "z"])
         print(sph_new_instance.gas_particles[0].position)
 
-        write_set_to_file(sph_new_instance.gas_particles, f"gas-iter-{i+1}.amuse", overwrite_file=True)
+        write_set_to_file(sph_new_instance.gas_particles,
+                          f"gas-iter-{i+1}.amuse", overwrite_file=True)
 
 #
 #     length_step_max = particles_original.h_smooth.max()
@@ -378,7 +389,7 @@ def main():
 #         np.log10(length_step_max.value_in(LENGTH_UNIT)),
 #         length_step_steps
 #     ) | LENGTH_UNIT
-# 
+#
 #     for length_step in length_steps:
 #         x_step_number = int(
 #             (boundary_x_max - boundary_x_min) / length_step
@@ -389,7 +400,7 @@ def main():
 #         z_step_number = int(
 #             (boundary_z_max - boundary_z_min) / length_step
 #         )
-# 
+#
 #         # meshgrid_array = np.meshgrid(
 #         x = np.linspace(
 #             (boundary_x_min).value_in(LENGTH_UNIT),
@@ -411,7 +422,7 @@ def main():
 #         particles_grid.x = xgrid.flatten()
 #         particles_grid.y = ygrid.flatten()
 #         particles_grid.z = zgrid.flatten()
-# 
+#
 #         # rho, rhovx, rhovy, rhovz, rhoe
 #         densitystate_original = sph_original.get_hydro_state_at_point(
 #             particles_grid.position)
@@ -420,7 +431,7 @@ def main():
 #             (x, y, z),
 #             rho_original.value_in(DENSITY_UNIT)
 #         )
-# 
+#
 #         guess_x, guess_y, guess_z = random_pdf_3d(
 #             len(particles_new),
 #             boundary_x_min, boundary_x_min,
@@ -432,7 +443,7 @@ def main():
 #         particles_new.x = guess_x
 #         particles_new.y = guess_y
 #         particles_new.z = guess_z
-# 
+#
 #         densitystate_new = get_hydro_fields(
 #             particles_new,
 #             query_locations=particles_grid.position,
@@ -447,14 +458,14 @@ def main():
 #         )
 #         # sph_new.get_hydro_state_at_point(
 #         #     particles_grid.position)
-# 
+#
 #         rho_new = densitystate_new[0]
-# 
+#
 #         rho_difference = rho_new - rho_original
 #         rho_difference.reshape(
 #             (x_step_number+2, y_step_number+2, z_step_number+2)
 #         )
-# 
+#
 #         drhodx_gradient = np.gradient(
 #             rho_difference.value_in(DENSITY_UNIT), axis=0
 #         ) | DENSITY_UNIT / length_step.as_unit()
@@ -464,9 +475,9 @@ def main():
 #         drhodz_gradient = np.gradient(
 #             rho_difference.value_in(DENSITY_UNIT), axis=2
 #         ) | DENSITY_UNIT / length_step.as_unit()
-# 
-# 
-#     # timestep = 
+#
+#
+#     # timestep =
 
 
 if __name__ == "__main__":
