@@ -23,7 +23,7 @@ LENGTH_UNIT = units.pc
 MASS_UNIT = units.MSun
 TIME_UNIT = units.Myr
 
-np.random.seed(5)
+np.random.seed(5)  # for reproducibility
 
 
 def random_guess_near_orig(
