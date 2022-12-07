@@ -33,18 +33,15 @@ def random_guess_near_orig(number_of_points, original_points, **kwargs):
     valid_x = np.zeros(number_of_points) | units.m
     valid_y = np.zeros(number_of_points) | units.m
     valid_z = np.zeros(number_of_points) | units.m
-    particles_chosen = original_points[
-        rng.integers(0, high=len(original_points), size=number_of_points)
-    ]
+    particles_chosen = original_points[rng.integers(0,
+                                                    high=len(original_points),
+                                                    size=number_of_points)]
     valid_x = particles_chosen.x + (
-        (rng.random(number_of_points) - 0.5) * particles_chosen.h_smooth
-    )
+        (rng.random(number_of_points) - 0.5) * particles_chosen.h_smooth)
     valid_y = particles_chosen.y + (
-        (rng.random(number_of_points) - 0.5) * particles_chosen.h_smooth
-    )
+        (rng.random(number_of_points) - 0.5) * particles_chosen.h_smooth)
     valid_z = particles_chosen.z + (
-        (rng.random(number_of_points) - 0.5) * particles_chosen.h_smooth
-    )
+        (rng.random(number_of_points) - 0.5) * particles_chosen.h_smooth)
     return (
         valid_x,
         valid_y,
@@ -80,16 +77,14 @@ def random_pdf_3d(
         rho_choice = random_sample(sample_size) * rhomax
         rho_answer = pdf(x_choice, y_choice, z_choice, **kwargs)
         valid_answers = np.where(rho_choice <= rho_answer)
-        number_done_new = min(number_of_points - number_done, len(valid_answers[0]))
-        valid_x[number_done : number_done + number_done_new] = x_choice[
-            valid_answers[0]
-        ][:number_done_new]
-        valid_y[number_done : number_done + number_done_new] = y_choice[
-            valid_answers[0]
-        ][:number_done_new]
-        valid_z[number_done : number_done + number_done_new] = z_choice[
-            valid_answers[0]
-        ][:number_done_new]
+        number_done_new = min(number_of_points - number_done,
+                              len(valid_answers[0]))
+        valid_x[number_done:number_done +
+                number_done_new] = x_choice[valid_answers[0]][:number_done_new]
+        valid_y[number_done:number_done +
+                number_done_new] = y_choice[valid_answers[0]][:number_done_new]
+        valid_z[number_done:number_done +
+                number_done_new] = z_choice[valid_answers[0]][:number_done_new]
         number_done += number_done_new
     return (
         valid_x[:number_of_points],
@@ -173,10 +168,10 @@ def main():
     # converter = nbody_system.nbody_to_si(
     #     particles_original.total_mass(), 1 | units.pc
     # )
-    print(
-        f"Creating {int(len(particles_original) * float(sys.argv[2]))} " "new particles"
-    )
-    particles_new = Particles(int(len(particles_original) * float(sys.argv[2])))
+    print(f"Creating {int(len(particles_original) * float(sys.argv[2]))} "
+          "new particles")
+    particles_new = Particles(int(
+        len(particles_original) * float(sys.argv[2])))
 
     boundary_x_min = particles_original.x.min()
     boundary_y_min = particles_original.y.min()
@@ -207,11 +202,10 @@ def main():
     )
     print("Copying density and smoothing length")
     sph_original_instance.gas_particles.new_channel_to(
-        particles_original
-    ).copy_attributes(["h_smooth", "rho"])
-    write_set_to_file(
-        sph_original_instance.gas_particles, "gas-original.amuse", overwrite_file=True
-    )
+        particles_original).copy_attributes(["h_smooth", "rho"])
+    write_set_to_file(sph_original_instance.gas_particles,
+                      "gas-original.amuse",
+                      overwrite_file=True)
     print("Getting max density")
     # This should work but gives weird results! FIXME
     # rho_max = sph_original_instance.get_rhomax()
@@ -247,26 +241,25 @@ def main():
     particles_new.mass = particles_original.total_mass() / len(particles_new)
 
     fields = sph_original_instance.get_hydro_state_at_point(
-        particles_new.x, particles_new.y, particles_new.z
-    )
+        particles_new.x, particles_new.y, particles_new.z)
     particles_new.vx = fields[1] / fields[0]
     particles_new.vy = fields[2] / fields[0]
     particles_new.vz = fields[3] / fields[0]
     particles_new.u = fields[4] / fields[0]
 
-    sph_new_instance = create_hydro_instance(particles_new, **{"convert_nbody": None})
-    write_set_to_file(
-        sph_new_instance.gas_particles, "gas-guess.amuse", overwrite_file=True
-    )
+    sph_new_instance = create_hydro_instance(particles_new,
+                                             **{"convert_nbody": None})
+    write_set_to_file(sph_new_instance.gas_particles,
+                      "gas-guess.amuse",
+                      overwrite_file=True)
 
     number_of_iterations = 10
     for i in range(number_of_iterations):
         print(f"Iteration {i+1}/{number_of_iterations}")
         sph_new_instance.gas_particles.new_channel_to(particles_new).copy()
         kwargs = {}
-        small_length = 1 * (sph_new_instance.gas_particles.h_smooth.min()).value_in(
-            LENGTH_UNIT
-        )
+        small_length = 1 * (sph_new_instance.gas_particles.h_smooth.min()
+                            ).value_in(LENGTH_UNIT)
         pressure_orig = []
         pressure_new = []
         pressure_difference = []
@@ -285,9 +278,7 @@ def main():
                     particles_new.y + offset[1],
                     particles_new.z + offset[2],
                     **kwargs,
-                )
-                ** 0.5
-            )
+                )**0.5)
             print("***** orig *****")
             kwargs["instance"] = sph_new_instance
             pressure_new.append(
@@ -296,29 +287,29 @@ def main():
                     particles_new.y + offset[1],
                     particles_new.z + offset[2],
                     **kwargs,
-                )
-                ** 0.5
-            )
+                )**0.5)
             print("***** new  *****")
             pressure_difference.append(
-                pressure_orig[-1] - pressure_new[-1]
-            )  # / particles_new.mass
+                pressure_orig[-1] - pressure_new[-1])  # / particles_new.mass
 
-        pressure_difference_gradient_dx = (
-            pressure_difference[1] - pressure_difference[0]
-        ) / (2 * small_length | LENGTH_UNIT)
-        pressure_difference_gradient_dy = (
-            pressure_difference[3] - pressure_difference[2]
-        ) / (2 * small_length | LENGTH_UNIT)
-        pressure_difference_gradient_dz = (
-            pressure_difference[5] - pressure_difference[4]
-        ) / (2 * small_length | LENGTH_UNIT)
+        pressure_difference_gradient_dx = (pressure_difference[1] -
+                                           pressure_difference[0]) / (
+                                               2 * small_length | LENGTH_UNIT)
+        pressure_difference_gradient_dy = (pressure_difference[3] -
+                                           pressure_difference[2]) / (
+                                               2 * small_length | LENGTH_UNIT)
+        pressure_difference_gradient_dz = (pressure_difference[5] -
+                                           pressure_difference[4]) / (
+                                               2 * small_length | LENGTH_UNIT)
 
         PRESSURE_UNIT = units.MSun * units.pc**-2 * units.Myr**-1
         print(
-            pressure_difference_gradient_dx[0].in_(PRESSURE_UNIT * units.pc**-1),
-            pressure_difference_gradient_dy[0].in_(PRESSURE_UNIT * units.pc**-1),
-            pressure_difference_gradient_dz[0].in_(PRESSURE_UNIT * units.pc**-1),
+            pressure_difference_gradient_dx[0].in_(PRESSURE_UNIT *
+                                                   units.pc**-1),
+            pressure_difference_gradient_dy[0].in_(PRESSURE_UNIT *
+                                                   units.pc**-1),
+            pressure_difference_gradient_dz[0].in_(PRESSURE_UNIT *
+                                                   units.pc**-1),
         )
         pdmax = max(
             max(
@@ -338,38 +329,34 @@ def main():
         pdmove_y = pressure_difference_gradient_dy / pdmax
         pdmove_z = pressure_difference_gradient_dz / pdmax
 
-        particles_new.x -= (
-            pdmove_x * (1 - i / number_of_iterations) * particles_new.h_smooth
-        )
+        particles_new.x -= (pdmove_x * (1 - i / number_of_iterations) *
+                            particles_new.h_smooth)
         # (
         #     pressure_difference_gradient_dx.value_in(
         #         PRESSURE_UNIT * units.pc**-1
         #     ) | 100*units.pc
         # )
-        particles_new.y -= (
-            pdmove_y * (1 - i / number_of_iterations) * particles_new.h_smooth
-        )
+        particles_new.y -= (pdmove_y * (1 - i / number_of_iterations) *
+                            particles_new.h_smooth)
         # (
         #     pressure_difference_gradient_dy.value_in(
         #         PRESSURE_UNIT * units.pc**-1
         #     ) | 100*units.pc
         # )
-        particles_new.z -= (
-            pdmove_z * (1 - i / number_of_iterations) * particles_new.h_smooth
-        )
+        particles_new.z -= (pdmove_z * (1 - i / number_of_iterations) *
+                            particles_new.h_smooth)
         # (
         #     pressure_difference_gradient_dz.value_in(
         #         PRESSURE_UNIT * units.pc**-1
         #     ) | 100*units.pc
         # )
-        particles_new.new_channel_to(sph_new_instance.gas_particles).copy_attributes(
-            ["x", "y", "z"]
-        )
+        particles_new.new_channel_to(
+            sph_new_instance.gas_particles).copy_attributes(["x", "y", "z"])
         print(sph_new_instance.gas_particles[0].position)
 
-        write_set_to_file(
-            sph_new_instance.gas_particles, f"gas-iter-{i+1}.amuse", overwrite_file=True
-        )
+        write_set_to_file(sph_new_instance.gas_particles,
+                          f"gas-iter-{i+1}.amuse",
+                          overwrite_file=True)
 
 
 #
@@ -470,7 +457,6 @@ def main():
 #
 #
 #     # timestep =
-
 
 if __name__ == "__main__":
     main()
