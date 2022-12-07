@@ -7,16 +7,14 @@ Arguments:
  - factor with which to multiply the original particle number
 """
 import sys
+
 import numpy as np
-from numpy.random import random_sample
-from scipy.interpolate import RegularGridInterpolator
-from amuse.io import read_set_from_file, write_set_to_file
-from amuse.units import units, nbody_system
-from amuse.datamodel import Particles
 from amuse.community.fi import Fi
-from numpy.random import Generator
-from numpy.random import random_sample
-from numpy.random import default_rng
+from amuse.datamodel import Particles
+from amuse.io import read_set_from_file, write_set_to_file
+from amuse.units import nbody_system, units
+from numpy.random import Generator, default_rng, random_sample
+from scipy.interpolate import RegularGridInterpolator
 
 DENSITY_UNIT = units.g * units.cm**-3
 LENGTH_UNIT = units.pc
