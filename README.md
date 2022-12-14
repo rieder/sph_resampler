@@ -9,7 +9,7 @@ Then, install the prerequisites:
 ```sh
 pip install -r requirements.txt
 ```
-Then, you can run the script (`python gas-original.amuse (FACTOR)`) or the plotting script (use -h for help).
+Then, you can run the script (`python resample_sph.py gas-original.amuse (FACTOR)`) or the plotting script (use -h for help).
 
 # Notes
 
